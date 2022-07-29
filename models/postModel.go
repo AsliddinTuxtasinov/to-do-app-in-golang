@@ -8,7 +8,7 @@ type ToDos []ToDo
 
 type ToDo struct {
 	gorm.Model
-	Title    string
-	Body     string
-	IsActive bool `json:"is_active" gorm:"type:bool;default:true"`
+	Title    string `json:"title"`
+	Body     string `json:"body"`
+	IsActive bool   `json:"is_active" gorm:"type:bool;default:true"`
 }

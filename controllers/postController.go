@@ -8,12 +8,23 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type ToDoCreateUtils struct {
+	Title string `json:"title"`
+	Body  string `json:"body"`
+}
+
+// Create ToDo godoc
+// @Summary      Create Todo
+// @Description  create by json Todo
+// @Tags         ToDo
+// @Accept       json
+// @Produce      json
+// @Param        ToDo body ToDoCreateUtils  true  "Create ToDo"
+// @Success      200  {object} models.ToDo
+// @Router       / [post]
 func ToDoCreate(c *gin.Context) {
 	// Get data of request body
-	var body struct {
-		Title string `json:"title"`
-		Body  string `json:"body"`
-	}
+	var body ToDoCreateUtils
 	err := c.BindJSON(&body)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Status Bad Request"})
@@ -34,6 +45,15 @@ func ToDoCreate(c *gin.Context) {
 	})
 }
 
+// List ToDo godoc
+// @Summary      List ToDos
+// @Description  get ToDos list
+// @Tags         ToDo
+// @Accept       json
+// @Produce      json
+// @Param        q   query    int false "is_active filter by q" Format(int64)
+// @Success      200 {object} models.ToDo
+// @Router       / [get]
 func ToDoList(c *gin.Context) {
 	// Get the param
 	q := c.Query("q")
@@ -58,6 +78,15 @@ func ToDoList(c *gin.Context) {
 	})
 }
 
+// Detail ToDo godoc
+// @Summary      Detail ToDo
+// @Description  get ToDo by ID
+// @Tags         ToDo
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "ToDo ID"
+// @Success      200  {object}  models.ToDo
+// @Router       /{id} [get]
 func ToDoDetail(c *gin.Context) {
 	// Get "id" off url
 	id := c.Param("id")
@@ -72,16 +101,23 @@ func ToDoDetail(c *gin.Context) {
 	})
 }
 
+// Update ToDo godoc
+// @Summary      Update ToDo 
+// @Description  Update ToDo by ID
+// @Tags         ToDo
+// @Accept       json
+// @Produce      json
+// @Param        id   path int true "ToDo ID" Format(int64)
+// @Param        ToDo body ToDoCreateUtils true "Create ToDo"
+// @Success      200  {object} models.ToDo
+// @Router       /{id} [put]
 func ToDoUpdate(c *gin.Context) {
 	// Get "id" off url
 	id := c.Param("id")
 
 	// Get the data off request body
-	var body struct {
-		Title string `json:"title"`
-		Body  string `json:"body"`
-	}
-	err := c.BindJSON(&body)
+	var body ToDoCreateUtils
+	err := c.ShouldBindJSON(&body)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Status Bad Request"})
 		return
@@ -100,6 +136,15 @@ func ToDoUpdate(c *gin.Context) {
 	})
 }
 
+// Update ToDo Active godoc
+// @Summary      Update ToDo Active
+// @Description  Update ToDo Active by ID
+// @Tags         ToDo
+// @Accept       json
+// @Produce      json
+// @Param        id  path     int true "ToDo ID" Format(int64)
+// @Success      200 {object} models.ToDo
+// @Router       /post-active-update/{id} [post]
 func ToDoUpdateActive(c *gin.Context) {
 	// Get "id" off url
 	id := c.Param("id")
@@ -122,6 +167,15 @@ func ToDoUpdateActive(c *gin.Context) {
 	})
 }
 
+// Delete ToDo godoc
+// @Summary      Delete ToDo
+// @Description  Delete ToDo by ID
+// @Tags         ToDo
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "ToDo ID"  Format(int64)
+// @Success      204  {string}  http.StatusOK
+// @Router       /{id} [delete]
 func ToDoDelete(c *gin.Context) {
 	// Get "id" off url
 	id := c.Param("id")

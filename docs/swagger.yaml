@@ -1,0 +1,187 @@
+basePath: /api/v1
+definitions:
+  controllers.ToDoCreateUtils:
+    properties:
+      body:
+        type: string
+      title:
+        type: string
+    type: object
+  gorm.DeletedAt:
+    properties:
+      time:
+        type: string
+      valid:
+        description: Valid is true if Time is not NULL
+        type: boolean
+    type: object
+  models.ToDo:
+    properties:
+      body:
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: integer
+      is_active:
+        type: boolean
+      title:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: asliddintukhtasinov5@gmail.com
+    name: API Support
+    url: http://google.com
+  description: This is a ToDo app in golang(gin, GORM).
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: ToDo app
+  version: "1.0"
+paths:
+  /:
+    get:
+      consumes:
+      - application/json
+      description: get ToDos list
+      parameters:
+      - description: is_active filter by q
+        format: int64
+        in: query
+        name: q
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ToDo'
+      summary: List ToDos
+      tags:
+      - ToDo
+    post:
+      consumes:
+      - application/json
+      description: create by json Todo
+      parameters:
+      - description: Create ToDo
+        in: body
+        name: ToDo
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.ToDoCreateUtils'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ToDo'
+      summary: Create Todo
+      tags:
+      - ToDo
+  /{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete ToDo by ID
+      parameters:
+      - description: ToDo ID
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            type: string
+      summary: Delete ToDo
+      tags:
+      - ToDo
+    get:
+      consumes:
+      - application/json
+      description: get ToDo by ID
+      parameters:
+      - description: ToDo ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ToDo'
+      summary: Detail ToDo
+      tags:
+      - ToDo
+    put:
+      consumes:
+      - application/json
+      description: Update ToDo by ID
+      parameters:
+      - description: ToDo ID
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Create ToDo
+        in: body
+        name: ToDo
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.ToDoCreateUtils'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ToDo'
+      summary: Update ToDo
+      tags:
+      - ToDo
+  /post-active-update/{id}:
+    post:
+      consumes:
+      - application/json
+      description: Update ToDo Active by ID
+      parameters:
+      - description: ToDo ID
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ToDo'
+      summary: Update ToDo Active
+      tags:
+      - ToDo
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
