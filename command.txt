@@ -1,0 +1,3 @@
+swag init --parseDependency --parseInternal
+
+CompileDaemon --command="./gorm-gin-practise"

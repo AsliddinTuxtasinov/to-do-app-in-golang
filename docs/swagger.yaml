@@ -7,6 +7,22 @@ definitions:
       title:
         type: string
     type: object
+  controllers.loginSerializer:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  controllers.signUpSerializer:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+      password2:
+        type: string
+    type: object
   gorm.DeletedAt:
     properties:
       time:
@@ -157,6 +173,50 @@ paths:
       summary: Update ToDo
       tags:
       - ToDo
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Login user
+      parameters:
+      - description: Login
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.loginSerializer'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Login
+      tags:
+      - Auth
+  /auth/siginup:
+    post:
+      consumes:
+      - application/json
+      description: Sign Up user
+      parameters:
+      - description: Sign Up
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.signUpSerializer'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            type: string
+      summary: Sign Up
+      tags:
+      - Auth
   /post-active-update/{id}:
     post:
       consumes:

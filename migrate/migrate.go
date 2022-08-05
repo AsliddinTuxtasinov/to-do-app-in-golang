@@ -12,6 +12,6 @@ func init() {
 }
 
 func main() {
-	initializers.DB.AutoMigrate(&models.ToDo{})
-	fmt.Println("Migrated models !")
+	initializers.DB.AutoMigrate(&models.ToDo{}, &models.User{})
+	fmt.Println("Migrated models done ...")
 }

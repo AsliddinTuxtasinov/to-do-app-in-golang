@@ -3,6 +3,7 @@ package main
 import (
 	"gorm-gin-practise/controllers"
 	"gorm-gin-practise/initializers"
+	"gorm-gin-practise/middleware"
 
 	"github.com/gin-gonic/gin"
 	swaggerfiles "github.com/swaggo/files"
@@ -36,10 +37,11 @@ func init() {
 // @description					Description for what is this security definition being used
 func main() {
 
-	r := gin.Default()
-	v1 := r.Group("/api/v1")
+	router := gin.New()
+
+	superGroup := router.Group("/api/v1")
 	{
-		todo := v1.Group("/")
+		todo := superGroup.Group("/", middleware.RequireAuth)
 		{
 			todo.POST("/", controllers.ToDoCreate)
 			todo.GET("/", controllers.ToDoList)
@@ -48,8 +50,15 @@ func main() {
 			todo.PUT("/:id", controllers.ToDoUpdate)
 			todo.DELETE("/:id", controllers.ToDoDelete)
 		}
+
+		auth := superGroup.Group("/auth")
+		{
+			auth.POST("/siginup", controllers.SignUp)
+			auth.POST("/login", controllers.Login)
+		}
 	}
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
-	r.Run(":8080") // listen and serve on 0.0.0.0:8080
+
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+	router.Run(":8080") // listen and serve on 0.0.0.0:8080
 
 }
