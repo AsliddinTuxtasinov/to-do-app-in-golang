@@ -11,4 +11,6 @@ type ToDo struct {
 	Title    string `json:"title"`
 	Body     string `json:"body"`
 	IsActive bool   `json:"is_active" gorm:"type:bool;default:true"`
+	UserID   uint   `json:"user_id"`
 }
+	

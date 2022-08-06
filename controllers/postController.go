@@ -3,6 +3,7 @@ package controllers
 import (
 	"gorm-gin-practise/initializers"
 	"gorm-gin-practise/models"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -32,7 +33,8 @@ func ToDoCreate(c *gin.Context) {
 	}
 
 	// Create a ToDo
-	toDo := models.ToDo{Title: body.Title, Body: body.Body}
+	reqUser, _ := c.Get("user")
+	toDo := models.ToDo{Title: body.Title, Body: body.Body, UserID: reqUser.(models.User).ID}
 	result := initializers.DB.Create(&toDo)
 	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": result.Error.Error()})
@@ -60,12 +62,13 @@ func ToDoList(c *gin.Context) {
 
 	// Get the posts
 	var toDos models.ToDos
+	reqUser, _ := c.Get("user")
 	switch q {
 	case "1":
-		initializers.DB.Where("is_active = ?", true).Find(&toDos)
+		initializers.DB.Where("is_active = ? AND user_id = ?", true, reqUser.(models.User).ID).Find(&toDos)
 		break
 	case "0":
-		initializers.DB.Where("is_active = ?", false).Find(&toDos)
+		initializers.DB.Where("is_active = ? AND user_id = ?", false, reqUser.(models.User).ID).Find(&toDos)
 		break
 	case "":
 		initializers.DB.Find(&toDos)
@@ -93,7 +96,9 @@ func ToDoDetail(c *gin.Context) {
 
 	// Get the posts
 	var toDo models.ToDo
-	initializers.DB.First(&toDo, id)
+	reqUser, _ := c.Get("user")
+	// initializers.DB.First(&toDo, id)
+	initializers.DB.Where("user_id = ?", reqUser.(models.User).ID).First(&toDo, id)
 
 	// Response them
 	c.JSON(http.StatusOK, gin.H{
@@ -102,7 +107,7 @@ func ToDoDetail(c *gin.Context) {
 }
 
 // Update ToDo godoc
-// @Summary      Update ToDo 
+// @Summary      Update ToDo
 // @Description  Update ToDo by ID
 // @Tags         ToDo
 // @Accept       json
@@ -125,7 +130,9 @@ func ToDoUpdate(c *gin.Context) {
 
 	// Find the ToDo were updating
 	var toDo models.ToDo
-	initializers.DB.First(&toDo, id)
+	reqUser, _ := c.Get("user")
+	// initializers.DB.First(&toDo, id)
+	initializers.DB.Where("user_id = ?", reqUser.(models.User).ID).First(&toDo, id)
 
 	// Update it
 	initializers.DB.Model(&toDo).Updates(models.ToDo{Title: body.Title, Body: body.Body})
@@ -151,7 +158,9 @@ func ToDoUpdateActive(c *gin.Context) {
 
 	// Find the ToDo were updating
 	var toDo models.ToDo
-	initializers.DB.First(&toDo, id)
+	reqUser, _ := c.Get("user")
+	// initializers.DB.First(&toDo, id)
+	initializers.DB.Where("user_id = ?", reqUser.(models.User).ID).First(&toDo, id)
 
 	// Update it
 	if toDo.IsActive == true {
@@ -181,7 +190,12 @@ func ToDoDelete(c *gin.Context) {
 	id := c.Param("id")
 
 	// Delete the content
-	initializers.DB.Delete(&models.ToDo{}, id)
+	reqUser, _ := c.Get("user")
+	// initializers.DB.Delete(&models.ToDo{}, id)
+	tx := initializers.DB.Where("user_id = ?", reqUser.(models.User).ID).Delete(&models.ToDo{}, id)
+	if tx.Error != nil {
+		log.Fatal(">>>> ", tx.Error)
+	}
 
 	// Respond it
 	c.JSON(http.StatusOK, gin.H{
